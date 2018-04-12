@@ -1,9 +1,13 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
-var pacienteSchema = new Schema({
+var mongoose = require('mongoose')
+    require('mongoose-double')(mongoose);
+var schema = mongoose.Schema,
+schemaTypes = schema.Types;
+var pacienteSchema = new schema({
     nombre: String,
     edad: String,
     genero: String,
+    google_id: String,
+    registrado: Boolean,
     direccion: String,
     lugar_nacimiento: String,
     fecha_nacimiento: Date,
@@ -24,17 +28,17 @@ var pacienteSchema = new Schema({
     test: [{
         fecha: Date,
         paciente: {
-            memoria: Double,
-            orientacion: Double,
-            juicio: Double
+            memoria: schemaTypes.Double,
+            orientacion: schemaTypes.Double,
+            juicio: schemaTypes.Double
         },
         informante: {
-            memoria: Double,
-            orientacion: Double,
-            juicio: Double,
-            actividadesC: Double,
-            actividadesD: Double,
-            cuidadoP: Double
+            memoria: schemaTypes.Double,
+            orientacion: schemaTypes.Double,
+            juicio: schemaTypes.Double,
+            actividadesC: schemaTypes.Double,
+            actividadesD: schemaTypes.Double,
+            cuidadoP: schemaTypes.Double
         }
     }],
     actividadesSeleccion: [{
@@ -49,7 +53,7 @@ var pacienteSchema = new Schema({
         area: String,
         pregunta: String,
         opciones: [String],
-        respuesta: [Integer],
+        respuesta: [Number],
         imagen: Boolean,
         rutaImagen: String
     }],
@@ -58,8 +62,8 @@ var pacienteSchema = new Schema({
         area: String,
         emocion: String,
         acierto: Boolean,
-        tiempoSeg: Integer,
-        idPregunta: ObjectId
+        tiempoSeg: Number,
+        idPregunta: schema.ObjectId
     }]
 }, {collection: 'pacientes'});
-module.exports = mongoose.model('User', pacienteSchema);
+module.exports = mongoose.model('Users', pacienteSchema);

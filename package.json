@@ -6,13 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "mongoose": "~5.0.12",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "^4.16.3",
+    "glob": "^7.1.2",
     "jade": "~1.11.0",
+    "mongoose": "~5.0.12",
+    "mongoose-double": "^0.0.1",
     "morgan": "~1.9.0",
-    "serve-favicon": "~2.4.5"
+    "npm": "^5.8.0",
+    "serve-favicon": "~2.4.5",
+    "to": "^0.2.9",
+    "update": "^0.7.4"
   }
 }
