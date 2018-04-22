@@ -9,21 +9,22 @@ var pacienteSchema = new schema({
     google_id: String,
     registrado: Boolean,
     direccion: String,
-    lugar_nacimiento: String,
-    fecha_nacimiento: Date,
-    ocupacion: String,
+    pais_nacimiento: String,
+    ciudad_nacimiento: String,
+    lugar_residencia: String,
+    fecha_nacimiento: String,
+    ocupacion_principal: String,
     escolaridad: String,
+    colegio: String,
+    estado_civil: String,
+    fecha_matrimonio: String,
+    pasatiempo:String,
+    genero_musical: String,
+    capacidad_fisica: String,
+    capacidad_caminar: String
     familiares: [{
         nombre: String,
-        edad: String,
-        genero: String,
-        parentesco: String,
-        hijos: [{
-            nombre: String,
-            edad: String,
-            genero: String,
-            parentesco: String
-        }]
+        parentesco: String
     }],
     test: [{
         fecha: Date,
