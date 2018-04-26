@@ -40,7 +40,8 @@ module.exports = {
             pasatiempo: req.body.pasaTiempo,
             genero_musical: req.body.generoMusical,
             capacidad_fisica: req.body.capacidadFisica,
-            capacidad_caminar: req.body.capacidadCaminar
+            capacidad_caminar: req.body.capacidadCaminar,
+            familiares:req.body.familiares
 
         });
 
