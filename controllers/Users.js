@@ -28,19 +28,19 @@ module.exports = {
             google_id: req.body.google_id,
             registrado: req.body.registrado,
             direccion: req.body.direccion,
-            pais_nacimiento: req.body.paisNacimiento,
-            ciudad_nacimiento: req.body.ciudadNacimiento,
-            lugar_residencia: req.body.lugarResidencia,
-            fecha_nacimiento: req.body.fechaNacimiento,
-            ocupacion_principal: req.body.ocupacionPrincipal,
+            pais_nacimiento: req.body.pais_nacimiento,
+            ciudad_nacimiento: req.body.ciudad_nacimiento,
+            lugar_residencia: req.body.lugar_residencia,
+            fecha_nacimiento: req.body.fecha_nacimiento,
+            ocupacion_principal: req.body.ocupacion_principal,
             escolaridad: req.body.escolaridad,
             colegio: req.body.colegio,
-            estado_civil: req.body.estadoCivil,
-            fecha_matrimonio: req.body.fechaMatrimonio,
-            pasatiempo: req.body.pasaTiempo,
-            genero_musical: req.body.generoMusical,
-            capacidad_fisica: req.body.capacidadFisica,
-            capacidad_caminar: req.body.capacidadCaminar,
+            estado_civil: req.body.estado_civil,
+            fecha_matrimonio: req.body.fecha_matrimonio,
+            pasatiempo: req.body.pasatiempo,
+            genero_musical: req.body.genero_musical,
+            capacidad_fisica: req.body.capacidad_fisica,
+            capacidad_caminar: req.body.capacidad_caminar,
             familiares:req.body.familiares
 
         });
@@ -52,5 +52,14 @@ module.exports = {
             res.send(user)
         })
 
+    },
+
+    getUserInfo: function f(req, res) {
+        console.log(req.toString())
+        User.findOne({google_id: req.body.google_id}, function (err, user) {
+            if (user)
+                res.send(user)
+
+        })
     }
 }

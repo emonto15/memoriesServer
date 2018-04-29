@@ -4,6 +4,7 @@ var express = require('express'),
 
 /* GET users listing. */
 router.post('/login', users.login);
-router.post('/createUser',users.createUser)
+router.post('/createUser',users.createUser);
+router.get('/getUserInfo', users.getUserInfo);
 
 module.exports = router;
