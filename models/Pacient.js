@@ -21,7 +21,7 @@ var pacienteSchema = new schema({
     pasatiempo:String,
     genero_musical: String,
     capacidad_fisica: String,
-    capacidad_caminar: String
+    capacidad_caminar: String,
     familiares: [{
         nombre: String,
         parentesco: String
