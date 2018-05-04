@@ -36,10 +36,7 @@ var pacienteSchema = new schema({
         informante: {
             memoria: schemaTypes.Double,
             orientacion: schemaTypes.Double,
-            juicio: schemaTypes.Double,
-            actividadesC: schemaTypes.Double,
-            actividadesD: schemaTypes.Double,
-            cuidadoP: schemaTypes.Double
+            juicio: schemaTypes.Double
         }
     }],
     actividadesSeleccion: [{
