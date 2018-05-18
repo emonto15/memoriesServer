@@ -28,6 +28,7 @@ var pacienteSchema = new schema({
     }],
     test: [{
         fecha: Date,
+        puntaje_global: schemaTypes.Double,
         paciente: {
             memoria: schemaTypes.Double,
             orientacion: schemaTypes.Double,
