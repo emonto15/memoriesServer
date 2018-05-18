@@ -1,20 +1,20 @@
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
     User = mongoose.model('Users');
 module.exports = {
     login: function f(req, res) {
-        console.log(req.toString())
+        console.log(req.toString());
         User.findOne({google_id: req.body.google_id}, function (err, user) {
             if (user)
-                res.send(user)
+                res.send(user);
             else {
-               res.send({"registrado": false})
+                res.send({"registrado": false})
             }
 
         })
     },
 
-    createUser: function f(req,res) {
-        var user = new User({
+    createUser: function f(req, res) {
+        let user = new User({
             nombre: req.body.nombre,
             edad: req.body.edad,
             genero: req.body.genero,
@@ -34,24 +34,24 @@ module.exports = {
             genero_musical: req.body.genero_musical,
             capacidad_fisica: req.body.capacidad_fisica,
             capacidad_caminar: req.body.capacidad_caminar,
-            familiares:req.body.familiares
+            familiares: req.body.familiares
 
         });
 
         user.save(function (err) {
-            if(err)
-                console.log(err)
+            if (err)
+                console.log(err);
             else
-            res.send(user)
+                res.send(user)
         })
 
     },
 
     getUserInfo: function f(req, res) {
-        console.log(req.toString())
+        console.log(req.toString());
         User.findOne({google_id: req.body.google_id}, function (err, user) {
             if (user)
-                res.send(user)
+                res.send(user);
             else
                 console.log(err)
 
@@ -59,8 +59,9 @@ module.exports = {
     },
 
     updateUserInfo: function f(req, res) {
-        User.updateOne({google_id: req.body.google_id},{
-            $set: {nombre: req.body.nombre,
+        User.updateOne({google_id: req.body.google_id}, {
+            $set: {
+                nombre: req.body.nombre,
                 edad: req.body.edad,
                 genero: req.body.genero,
                 google_id: req.body.google_id,
@@ -79,16 +80,50 @@ module.exports = {
                 genero_musical: req.body.genero_musical,
                 capacidad_fisica: req.body.capacidad_fisica,
                 capacidad_caminar: req.body.capacidad_caminar,
-                familiares:req.body.familiares
+                familiares: req.body.familiares
             }
         }, function (err) {
 
-            if(err){
+            if (err) {
                 res.send(err).status(500)
-            }else{
+            } else {
                 res.send("actualizado exitosamente").status(200)
             }
         })
 
+    },
+
+    testUpload: function f(req, res) {
+        User.findOne({google_id: req.body.google_id}, function (err, user) {
+            let test = {
+                fecha: req.body.fecha,
+                puntaje_global: req.body.global,
+                paciente: {
+                    memoria: req.body.paciente.memoria,
+                    orientacion: req.body.paciente.orientacion,
+                    juicio: req.body.paciente.juicio
+                },
+                informante: {
+                    memoria: req.body.informante.memoria,
+                    orientacion: req.body.informante.orientacion,
+                    juicio: req.body.informante.juicio
+                }
+            };
+            if (user) {
+                user.test.push(test);
+                user.save(function(err){
+                    if(!err){
+                        res.status(200).send(user.google_id);
+                    }else{
+                        res.status(500).send({err: "Poblems saving: "+ req.body.google_id});
+                    }
+
+                })
+            }else{
+                res.status(404).send({err: "User with google id: "+ req.body.google_id + " was not found"});
+            }
+
+        })
     }
-}
+
+};

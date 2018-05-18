@@ -7,5 +7,6 @@ router.post('/login', users.login);
 router.post('/createUser',users.createUser);
 router.get('/getUserInfo', users.getUserInfo);
 router.post('/updateUser', users.updateUserInfo);
+router.post('/test', users.testUpload);
 
 module.exports = router;
