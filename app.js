@@ -15,6 +15,8 @@ mongoose.connect(config.db);
 
 var db = mongoose.connection;
 require('./models/Pacient')
+require('./models/Questions')
+
 db.on('error', function () {
     throw new Error('unable to connect to database at ' + config.db);
 });
@@ -38,4 +40,6 @@ app.listen(3000,function (err) {
 })
 
 module.exports = app;
+
+
 

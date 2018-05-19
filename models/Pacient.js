@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-    require('mongoose-double')(mongoose);
+require('mongoose-double')(mongoose);
 var schema = mongoose.Schema,
-schemaTypes = schema.Types;
+    schemaTypes = schema.Types;
 var pacienteSchema = new schema({
     nombre: String,
     edad: String,
@@ -18,7 +18,7 @@ var pacienteSchema = new schema({
     colegio: String,
     estado_civil: String,
     fecha_matrimonio: Date,
-    pasatiempo:String,
+    pasatiempo: String,
     genero_musical: String,
     capacidad_fisica: String,
     capacidad_caminar: String,
@@ -28,41 +28,32 @@ var pacienteSchema = new schema({
     }],
     test: [{
         fecha: Date,
-        puntaje_global: schemaTypes.Double,
-        paciente: {
-            memoria: schemaTypes.Double,
-            orientacion: schemaTypes.Double,
-            juicio: schemaTypes.Double
-        },
-        informante: {
-            memoria: schemaTypes.Double,
-            orientacion: schemaTypes.Double,
-            juicio: schemaTypes.Double
-        }
+        memoria: schemaTypes.Double,
+        orientacion: schemaTypes.Double,
+        juicio: schemaTypes.Double
     }],
-    actividadesSeleccion: [{
-        area: String,
-        pregunta: String,
-        opciones: [String],
-        respuesta: String,
-        imagen: Boolean,
-        rutaImagen: String
-    }],
-    actividadesSecuencia: [{
-        area: String,
-        pregunta: String,
-        opciones: [String],
-        respuesta: [Number],
-        imagen: Boolean,
-        rutaImagen: String
-    }],
-    resultados:[{
+    resultados: [{
         fecha: Date,
-        area: String,
-        emocion: String,
-        acierto: Boolean,
-        tiempoSeg: Number,
-        idPregunta: schema.ObjectId
-    }]
+        memoria: schemaTypes.Double,
+        orientacion: schemaTypes.Double,
+        juicio: schemaTypes.Double
+    }],
+    gustos: {
+        1: { //memoria
+            1: Number, //cualNo
+            2: Number, //cual
+            3: Number //info
+        },
+        2: { //orientacion
+            1: Number, //fecha
+            2: Number //situacion
+        },
+        3: { //juicio
+            1: Number, //calculo
+            2: Number, //semejanzas
+            3: Number, //diferencias
+            4: Number //secuencias
+        }
+    }
 }, {collection: 'pacientes'});
 module.exports = mongoose.model('Users', pacienteSchema);
