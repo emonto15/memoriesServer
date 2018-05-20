@@ -17,18 +17,7 @@ module.exports = {
     createQuestion: function f(req, res) {
         let question = new Question({
             idArea: req.body.idArea,
-            subAreas: [{
-                id: req.body.idSubarea,
-                preguntas: [{
-                    pregunta: req.body.pregunta,
-                    opciones: [req.body.opciones],
-                    respuestaSel: req.body.sel,
-                    respuestaSec: [req.body.sec],
-                    imagen: req.body.imagen,
-                    ifSec: req.body.ifsec,
-                    rutaImagen: req.body.rutaImagen
-                }]
-            }]
+            subAreas: req.body.subAreas
         });
 
         question.save(function (err) {
@@ -183,57 +172,62 @@ module.exports = {
                 var p, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10
                 var subArea11, subArea12, subArea13, subArea14, subArea21, subArea22
                 var subareas, keys, val, max, randArea
-                if (peorTest === peorQuiz) {
+                if (peorTest == peorQuiz) {
                     options.splice(options.indexOf(peorTest), 1)
                     subareas = user.gustos[peorTest.toString()]
                     keys = Object.keys(subareas)
-                    val = Object.values(subareas)
-                    max = Math.max(...val)
+                    val1 = Object.values(subareas)
+                    max = Math.max(...val1)
                     Question.findOne({idArea: peorTest}, function (err, area) {
                         area.subAreas.forEach(function (val) {
-                            if (val.id === keys[val.indexOf(max)]) {
+                            if (val.id == keys[val1.indexOf(max)]) {
+
                                 //3 primeras de la peorTest area y subarea con la mejor emocion
-                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
-                                p1.area = area.id
+                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
+                                p1.area = area.idArea
                                 p1.subArea = val.id
-                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
-                                p2.area = area.id
+                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
+                                p2.area = area.idArea
                                 p2.subArea = val.id
-                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
-                                p3.area = area.id
+                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
+                                p3.area = area.idArea
                                 p3.subArea = val.id
                                 //3 Aleatorias de las demas subareas
                                 subArea12 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)]
-                                p4.area = area.id
+                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)].toJSON()
+                                p4.area = area.idArea
                                 p4.subArea = subArea12.id
                                 subArea13 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p5 = subArea13.preguntas[Math.floor(Math.random() * subArea13.preguntas.length)]
-                                p5.area = area.id
+                                p5 = subArea13.preguntas[Math.floor(Math.random() * subArea13.preguntas.length)].toJSON()
+                                p5.area = area.idArea
                                 p5.subArea = subArea13.id
                                 subArea14 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p6 = subArea14.preguntas[Math.floor(Math.random() * subArea14.preguntas.length)]
-                                p6.area = area.id
+                                p6 = subArea14.preguntas[Math.floor(Math.random() * subArea14.preguntas.length)].toJSON()
+                                p6.area = area.idArea
                                 p6.subArea = subArea14.id
 
-                                randArea = options[(Math.random() * options.length)]
+                                randInt = Math.floor(Math.random() * (options.length -1))
+                                console.log(randInt)
+                                randArea = options[randInt]
                                 options.splice(options.indexOf(randArea), 1)
                                 //Siguiente area aleatoria para seleccionar 2 pregs
                                 Question.findOne({idArea: randArea}, function (err, area1) {
                                     subareas = user.gustos[randArea]
-                                    keys = Object.keys(subareas)
-                                    val = Object.values(subareas)
+                                    keys = Object.keys(subareas.toJSON())
+                                    val = Object.values(subareas.toJSON())
                                     max = Math.max(...val)
+                                    console.log(subareas,keys,val,max)
                                     area1.subAreas.forEach(function (val1) {
-                                        if (val1.id === keys[val.indexOf(max)]) {
+                                        console.log(val1.id, 'o', keys[val.indexOf(max)])
+                                        if (val1.id == keys[val.indexOf(max)]) {
                                             // 1 obtener la subarea con la mejor emocion
-                                            p7 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)]
-                                            p7.area = area1.id
+                                            p7 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
+                                            p7.area = area1.idArea
                                             p7.subArea = val1.id
                                             //subarea aleatoria
                                             subArea21 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p8 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)]
-                                            p8.area = area1.id
+                                            p8 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
+                                            p8.area = area1.idArea
                                             p8.subArea = subArea21.id
                                             //Area restante 2 pregs
                                             Question.findOne({idArea: options[0]}, function (err, area2) {
@@ -242,17 +236,19 @@ module.exports = {
                                                 val = Object.values(subareas)
                                                 max = Math.max(...val)
                                                 area2.subAreas.forEach(function (val2) {
-                                                    if (val2.id === keys[val.indexOf(max)]) {
+                                                    if (val2.id == keys[val.indexOf(max)]) {
                                                         //1 obtener la subarea con la mejor emocion
-                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)]
-                                                        p9.area = area2.id
+                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON()
+                                                        p9.area = area2.idArea
                                                         p9.subArea = val2.id
                                                         //1 subarea aleatoria
                                                         subArea22 = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
-                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)]
-                                                        p10.area = area2.id
+                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)].toJSON()
+                                                        p10.area = area2.idArea
                                                         p10.subArea = subArea22.id
+                                                        console.log(p10)
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+                                                        console.log(p.length)
                                                         res.status(200).send(p)
                                                     }
                                                 })
@@ -273,19 +269,19 @@ module.exports = {
                         area.subAreas.forEach(function (val) {
                             if (val.id === keys[val.indexOf(max)]) {
                                 //2 primeras de la peorTest area y subarea con la mejor emocion
-                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
+                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
                                 p1.area = area.id
                                 p1.subArea = val.id
-                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
+                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
                                 p2.area = area.id
                                 p2.subArea = val.id
                                 subArea11 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)]
+                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
                                 p3.area = area.id
                                 p3.subArea = subArea11.id
                                 //3 Aleatorias de las demas subareas
                                 subArea12 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)]
+                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)].toJSON()
                                 p4.area = area.id
                                 p4.subArea = subArea12.id
                                 options.splice(options.indexOf(peorQuiz), 1)
@@ -298,19 +294,19 @@ module.exports = {
                                     area1.subAreas.forEach(function (val1) {
                                         if (val1.id === keys[val.indexOf(max)]) {
                                             // 1 obtener la subarea con la mejor emocion
-                                            p5 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)]
+                                            p5 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
                                             p5.area = area1.id
                                             p5.subArea = val1.id
-                                            p6 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)]
+                                            p6 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
                                             p6.area = area1.id
                                             p6.subArea = val1.id
                                             //subarea aleatoria
                                             subArea21 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p7 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)]
+                                            p7 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
                                             p7.area = area1.id
                                             p7.subArea = subArea21.id
                                             subArea22 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p8 = subArea22.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)]
+                                            p8 = subArea22.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
                                             p8.area = area1.id
                                             p8.subArea = subArea22.id
                                             //Area restante 2 pregs
@@ -322,12 +318,12 @@ module.exports = {
                                                 area2.subAreas.forEach(function (val2) {
                                                     if (val2.id === keys[val.indexOf(max)]) {
                                                         //1 obtener la subarea con la mejor emocion
-                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)]
+                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON()
                                                         p9.area = area2.id
                                                         p9.subArea = val2.id
                                                         //1 subarea aleatoria
                                                         subArea22 = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
-                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)]
+                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)].toJSON()
                                                         p10.area = area2.id
                                                         p10.subArea = subArea22.id
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
