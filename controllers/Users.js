@@ -346,13 +346,21 @@ module.exports = {
 
     quizAnswersUpload: function f(req, res) {
         User.findOne({google_id: req.body.google_id}, function (err, user) {
-            var resultado = {
-                fecha: req.body.fecha,
-                memoria: req.body.memoria,
-                orientacion: req.body.orientacion,
-                juicio: req.body.juicio
+            if(user){
+                var resultado = {
+                    fecha: req.body.fecha,
+                    memoria: req.body.memoria,
+                    orientacion: req.body.orientacion,
+                    juicio: req.body.juicio
+                }
+                user.resultados.push(resultado)
+                user.save(function (err) {
+                    if(!err){
+                        res.status(200).send()
+                    }
+                });
             }
-            user.resultados.push(resultado)
+
         })
     },
 

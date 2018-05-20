@@ -11,6 +11,7 @@ router.post('/test', users.testUpload);
 router.post('/nextQuiz',users.nextRound);
 router.post('/quiz/emotion',users.quizEmotionsUpload);
 router.post('/report',users.getEmotions);
+router.post('/quiz/upload', users.quizAnswersUpload)
 router.post('/question',users.createQuestion);
 
 
