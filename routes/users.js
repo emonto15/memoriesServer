@@ -8,6 +8,7 @@ router.post('/createUser',users.createUser);
 router.get('/getUserInfo', users.getUserInfo);
 router.post('/updateUser', users.updateUserInfo);
 router.post('/test', users.testUpload);
+router.post('/nextQuiz',users.nextRound);
 router.post('/quiz/emotion',users.quizEmotionsUpload);
 router.post('/report',users.getEmotions)
 
