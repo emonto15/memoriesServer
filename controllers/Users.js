@@ -14,6 +14,31 @@ module.exports = {
         })
     },
 
+    createQuestion: function f(req, res) {
+        let question = new Question({
+            idArea: req.body.idArea,
+            subAreas: [{
+                id: req.body.idSubarea,
+                preguntas: [{
+                    pregunta: req.body.pregunta,
+                    opciones: [req.body.opciones],
+                    respuestaSel: req.body.sel,
+                    respuestaSec: [req.body.sec],
+                    imagen: req.body.imagen,
+                    ifSec: req.body.ifsec,
+                    rutaImagen: req.body.rutaImagen
+                }]
+            }]
+        });
+
+        question.save(function (err) {
+            if (err)
+                console.log(err);
+            else
+                res.send(question)
+        })
+    },
+
     createUser: function f(req, res) {
         let user = new User({
             nombre: req.body.nombre,
