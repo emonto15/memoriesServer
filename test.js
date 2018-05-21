@@ -6,4 +6,4 @@ c.splice(b,1)
 
 console.log(a,c)
 
-Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * val.preguntas.length)
+Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)

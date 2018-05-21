@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'),
     User = mongoose.model('Users'),
+    crypto = require('crypto'),
     Question = mongoose.model('Questions');
 module.exports = {
     login: function f(req, res) {
@@ -133,9 +134,10 @@ module.exports = {
         })
     },
 
-    nextRound: function f(req, res) {
+    nextRound: async function f(req, res) {
         User.findOne({google_id: req.body.google_id}, function (err, user) {
-            if(user) {
+            if (user) {
+                console.log("cono")
                 var peorTest = -1
                 var peorQuiz = -1
                 var ultimo = user.test[user.test.length - 1]
@@ -153,10 +155,18 @@ module.exports = {
                 } else {
                     peorTest = 2
                 }
-                ultimo = user.resultados[user.resultados.length - 1]
-                memoria = ultimo.memoria
-                juicio = ultimo.juicio
-                orientacion = ultimo.orientacion
+                memoria = 0
+                juicio = 0
+                orientacion = 0
+                user.resultados.forEach(function (ultimo) {
+                    memoria += ultimo.memoria
+                    juicio += ultimo.juicio
+                    orientacion += ultimo.orientacion
+                })
+                memoria = memoria / user.resultados.length
+                juicio = juicio / user.resultados.length
+                orientacion = orientacion / user.resultados.length
+
                 if (memoria < orientacion) {
                     if (memoria < juicio) {
                         peorQuiz = 1
@@ -168,45 +178,98 @@ module.exports = {
                 } else {
                     peorQuiz = 2
                 }
+                console.log(peorTest, peorQuiz)
                 var options = [1, 2, 3]
                 var p, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10
-                var subArea11, subArea12, subArea13, subArea14, subArea21, subArea22
-                var subareas, keys, val, max, randArea
+
+                var subareas, keys, valAux, max, randArea, subArea
+                var ids = []
+
                 if (peorTest == peorQuiz) {
                     options.splice(options.indexOf(peorTest), 1)
                     subareas = user.gustos[peorTest.toString()]
-                    keys = Object.keys(subareas)
-                    val1 = Object.values(subareas)
-                    max = Math.max(...val1)
+                    keys = Object.keys(subareas.toJSON())
+                    valAux = Object.values(subareas.toJSON())
+                    max = Math.max(...valAux)
                     Question.findOne({idArea: peorTest}, function (err, area) {
                         area.subAreas.forEach(function (val) {
-                            if (val.id == keys[val1.indexOf(max)]) {
+                            if (val.id == keys[valAux.indexOf(max)]) {
 
                                 //3 primeras de la peorTest area y subarea con la mejor emocion
-                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
+                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON();
                                 p1.area = area.idArea
                                 p1.subArea = val.id
-                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
-                                p2.area = area.idArea
-                                p2.subArea = val.id
-                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
-                                p3.area = area.idArea
-                                p3.subArea = val.id
+                                ids.push(p1._id)
+                                p2 = val.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * val.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p2._id)) {
+                                        p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p2._id)
+                                        p2.area = area.idArea
+                                        p2.subArea = val.id
+                                        return;
+                                    }
+                                })()
+                                p3 = val.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * val.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p3._id)) {
+                                        p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p3._id)
+                                        p3.area = area.idArea
+                                        p3.subArea = val.id
+                                        return;
+                                    }
+                                })()
                                 //3 Aleatorias de las demas subareas
-                                subArea12 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)].toJSON()
-                                p4.area = area.idArea
-                                p4.subArea = subArea12.id
-                                subArea13 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p5 = subArea13.preguntas[Math.floor(Math.random() * subArea13.preguntas.length)].toJSON()
-                                p5.area = area.idArea
-                                p5.subArea = subArea13.id
-                                subArea14 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p6 = subArea14.preguntas[Math.floor(Math.random() * subArea14.preguntas.length)].toJSON()
-                                p6.area = area.idArea
-                                p6.subArea = subArea14.id
+                                subArea = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
+                                p4 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p4._id)) {
+                                        p4 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p4._id)
+                                        p4.area = area.idArea
+                                        p4.subArea = subArea.id
+                                        return;
+                                    }
+                                })()
+                                subArea = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
+                                p5 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p5._id)) {
+                                        p5 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p5._id)
+                                        p5.area = area.idArea
+                                        p5.subArea = subArea.id
+                                        return;
+                                    }
+                                })()
+                                subArea = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
+                                p6 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p6._id)) {
+                                        p6 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p6._id)
+                                        p6.area = area.idArea
+                                        p6.subArea = subArea.id
+                                        return;
+                                    }
+                                })()
+                                while (ids.includes(p6._id)) {
+                                    p6 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                }
 
-                                randInt = Math.floor(Math.random() * (options.length -1))
+
+                                randInt = Math.floor(Math.random() * (options.length - 1))
                                 console.log(randInt)
                                 randArea = options[randInt]
                                 options.splice(options.indexOf(randArea), 1)
@@ -214,41 +277,79 @@ module.exports = {
                                 Question.findOne({idArea: randArea}, function (err, area1) {
                                     subareas = user.gustos[randArea]
                                     keys = Object.keys(subareas.toJSON())
-                                    val = Object.values(subareas.toJSON())
-                                    max = Math.max(...val)
-                                    console.log(subareas,keys,val,max)
+                                    valAux = Object.values(subareas.toJSON())
+                                    max = Math.max(...valAux)
                                     area1.subAreas.forEach(function (val1) {
-                                        console.log(val1.id, 'o', keys[val.indexOf(max)])
-                                        if (val1.id == keys[val.indexOf(max)]) {
+                                        console.log(val1.id, 'o', keys[valAux.indexOf(max)])
+                                        if (val1.id == keys[valAux.indexOf(max)]) {
                                             // 1 obtener la subarea con la mejor emocion
-                                            p7 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
-                                            p7.area = area1.idArea
-                                            p7.subArea = val1.id
+                                            p7 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p7._id)) {
+                                                    p7 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p7._id)
+                                                    p7.area = area1.idArea
+                                                    p7.subArea = val1.id
+                                                    return;
+                                                }
+                                            })()
                                             //subarea aleatoria
-                                            subArea21 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p8 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
-                                            p8.area = area1.idArea
-                                            p8.subArea = subArea21.id
+                                            subArea = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
+                                            p8 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p8._id)) {
+                                                    p8 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p8._id)
+                                                    p8.area = area1.idArea
+                                                    p8.subArea = subArea.id
+                                                    return;
+                                                }
+                                            })()
+
                                             //Area restante 2 pregs
                                             Question.findOne({idArea: options[0]}, function (err, area2) {
                                                 subareas = user.gustos[options[0]]
-                                                keys = Object.keys(subareas)
-                                                val = Object.values(subareas)
-                                                max = Math.max(...val)
+                                                keys = Object.keys(subareas.toJSON())
+                                                valAux = Object.values(subareas.toJSON())
+                                                max = Math.max(...valAux)
                                                 area2.subAreas.forEach(function (val2) {
-                                                    if (val2.id == keys[val.indexOf(max)]) {
+                                                    if (val2.id == keys[valAux.indexOf(max)]) {
                                                         //1 obtener la subarea con la mejor emocion
-                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON()
-                                                        p9.area = area2.idArea
-                                                        p9.subArea = val2.id
+                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON();
+                                                        (function iterator() {
+                                                            if (ids.includes(p9._id)) {
+                                                                p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON();
+                                                                iterator()
+                                                            } else {
+                                                                ids.push(p9._id)
+                                                                p9.area = area2.idArea
+                                                                p9.subArea = val2.id
+                                                                return;
+                                                            }
+                                                        })()
                                                         //1 subarea aleatoria
-                                                        subArea22 = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
-                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)].toJSON()
-                                                        p10.area = area2.idArea
-                                                        p10.subArea = subArea22.id
+                                                        subArea = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
+
+                                                        p10 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                        (function iterator() {
+                                                            if (ids.includes(p10._id)) {
+                                                                p10 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                                iterator()
+                                                            } else {
+                                                                ids.push(p10._id)
+                                                                p10.area = area2.idArea
+                                                                p10.subArea = subArea.id
+                                                                return;
+                                                            }
+                                                        })()
                                                         console.log(p10)
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
                                                         console.log(p.length)
+                                                        ids = []
                                                         res.status(200).send(p)
                                                     }
                                                 })
@@ -260,73 +361,166 @@ module.exports = {
                         })
                     })
                 } else {
+                    ids = []
                     options.splice(options.indexOf(peorTest), 1)
                     subareas = user.gustos[peorTest.toString()]
-                    keys = Object.keys(subareas)
-                    val = Object.values(subareas)
-                    max = Math.max(...val)
+                    keys = Object.keys(subareas.toJSON())
+                    valAux = Object.values(subareas.toJSON())
+                    max = Math.max(...valAux)
                     Question.findOne({idArea: peorTest}, function (err, area) {
+                        console.log("ACA")
                         area.subAreas.forEach(function (val) {
-                            if (val.id === keys[val.indexOf(max)]) {
+                            if (val.id == keys[valAux.indexOf(max)]) {
+                                console.log("DOS")
                                 //2 primeras de la peorTest area y subarea con la mejor emocion
-                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
-                                p1.area = area.id
+                                p1 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON();
+                                p1.area = area.idArea
                                 p1.subArea = val.id
-                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
-                                p2.area = area.id
-                                p2.subArea = val.id
-                                subArea11 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p3 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON()
-                                p3.area = area.id
-                                p3.subArea = subArea11.id
+                                ids.push(p1._id)
+                                p2 = val.preguntas[Math.floor(Math.random() * val.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p2._id)) {
+                                        console.log(val.preguntas)
+                                        var a = Math.floor(Math.random() * val.preguntas.length)
+                                        p2 = val.preguntas[a].toJSON()
+                                        console.log(p2)
+                                        iterator()
+                                    } else {
+                                        ids.push(p2._id)
+                                        p2.area = area.idArea
+                                        p2.subArea = val.id
+                                        return;
+                                    }
+                                })();
+
+                                subArea = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
+                                p3 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p3._id)) {
+                                        p3 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p3._id)
+                                        p3.area = area.idArea
+                                        p3.subArea = subArea.id
+                                        return;
+                                    }
+                                })()
                                 //3 Aleatorias de las demas subareas
-                                subArea12 = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
-                                p4 = subArea12.preguntas[Math.floor(Math.random() * subArea12.preguntas.length)].toJSON()
-                                p4.area = area.id
-                                p4.subArea = subArea12.id
+                                subArea = area.subAreas[Math.floor(Math.random() * area.subAreas.length)]
+                                p4 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                (function iterator() {
+                                    if (ids.includes(p4._id)) {
+                                        p4 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                        iterator()
+                                    } else {
+                                        ids.push(p4._id)
+                                        p4.area = area.idArea
+                                        p4.subArea = subArea.id
+                                        return;
+                                    }
+                                })()
                                 options.splice(options.indexOf(peorQuiz), 1)
                                 //Siguiente area aleatoria para seleccionar 2 pregs
                                 Question.findOne({idArea: peorQuiz}, function (err, area1) {
-                                    subareas = user.gustos[randArea]
-                                    keys = Object.keys(subareas)
-                                    val = Object.values(subareas)
-                                    max = Math.max(...val)
+                                    subareas = user.gustos[peorQuiz]
+                                    keys = Object.keys(subareas.toJSON())
+                                    valAux = Object.values(subareas.toJSON())
+                                    max = Math.max(...valAux)
                                     area1.subAreas.forEach(function (val1) {
-                                        if (val1.id === keys[val.indexOf(max)]) {
+                                        if (val1.id == keys[valAux.indexOf(max)]) {
                                             // 1 obtener la subarea con la mejor emocion
-                                            p5 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
-                                            p5.area = area1.id
-                                            p5.subArea = val1.id
-                                            p6 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON()
-                                            p6.area = area1.id
-                                            p6.subArea = val1.id
+                                            p5 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p5._id)) {
+                                                    p5 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p5._id)
+                                                    p5.area = area1.idArea
+                                                    p5.subArea = val1.id
+                                                    return;
+                                                }
+                                            })()
+                                            p6 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p6._id)) {
+                                                    p6 = val1.preguntas[Math.floor(Math.random() * val1.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p6._id)
+                                                    p6.area = area1.idArea
+                                                    p6.subArea = val1.id
+                                                    return;
+                                                }
+                                            })()
                                             //subarea aleatoria
-                                            subArea21 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p7 = subArea21.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
-                                            p7.area = area1.id
-                                            p7.subArea = subArea21.id
-                                            subArea22 = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
-                                            p8 = subArea22.preguntas[Math.floor(Math.random() * subArea21.preguntas.length)].toJSON()
-                                            p8.area = area1.id
-                                            p8.subArea = subArea22.id
+                                            subArea = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
+                                            p7 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p7._id)) {
+                                                    p7 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p7._id)
+                                                    p7.area = area1.idArea
+                                                    p7.subArea = subArea.id
+                                                    return;
+                                                }
+                                            })()
+                                            subArea = area1.subAreas[Math.floor(Math.random() * area1.subAreas.length)]
+                                            p8 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                            (function iterator() {
+                                                if (ids.includes(p8._id)) {
+                                                    p8 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                    iterator()
+                                                } else {
+                                                    ids.push(p8._id)
+                                                    p8.area = area1.idArea
+                                                    p8.subArea = subArea.id
+                                                    return;
+                                                }
+                                            })()
                                             //Area restante 2 pregs
                                             Question.findOne({idArea: options[0]}, function (err, area2) {
                                                 subareas = user.gustos[options[0]]
-                                                keys = Object.keys(subareas)
-                                                val = Object.values(subareas)
-                                                max = Math.max(...val)
+                                                keys = Object.keys(subareas.toJSON())
+                                                valAux = Object.values(subareas.toJSON())
+                                                max = Math.max(...valAux)
                                                 area2.subAreas.forEach(function (val2) {
-                                                    if (val2.id === keys[val.indexOf(max)]) {
+                                                    if (val2.id == keys[valAux.indexOf(max)]) {
                                                         //1 obtener la subarea con la mejor emocion
-                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON()
-                                                        p9.area = area2.id
-                                                        p9.subArea = val2.id
+                                                        p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON();
+                                                        (function iterator() {
+                                                            if (ids.includes(p9._id)) {
+                                                                p9 = val2.preguntas[Math.floor(Math.random() * val2.preguntas.length)].toJSON();
+                                                                iterator()
+                                                            } else {
+                                                                ids.push(p9._id)
+                                                                p9.area = area2.idArea
+                                                                p9.subArea = val2.id
+                                                                return;
+                                                            }
+                                                        })()
+
                                                         //1 subarea aleatoria
-                                                        subArea22 = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
-                                                        p10 = subArea22.preguntas[Math.floor(Math.random() * subArea22.preguntas.length)].toJSON()
-                                                        p10.area = area2.id
-                                                        p10.subArea = subArea22.id
+                                                        subArea = area2.subAreas[Math.floor(Math.random() * area2.subAreas.length)]
+                                                        p10 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                        (function iterator() {
+                                                            if (ids.includes(p10._id)) {
+                                                                p10 = subArea.preguntas[Math.floor((crypto.randomBytes(1024)[Math.floor(Math.random() * 1024)] / 255) * subArea.preguntas.length)].toJSON();
+                                                                iterator()
+                                                            } else {
+                                                                ids.push(p10._id)
+                                                                p10.area = area2.idArea
+                                                                p10.subArea = subArea.id
+                                                                return;
+                                                            }
+                                                        })()
+                                                        console.log(ids)
+                                                        ids = []
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+                                                        console.log(p)
                                                         res.status(200).send(p)
                                                     }
                                                 })
@@ -338,15 +532,16 @@ module.exports = {
                         })
                     })
                 }
-            }else {
+            } else {
                 res.status(404).send("Daniel el pelele")
             }
         })
     },
 
     quizAnswersUpload: function f(req, res) {
+        console.log(req.body)
         User.findOne({google_id: req.body.google_id}, function (err, user) {
-            if(user){
+            if (user) {
                 var resultado = {
                     fecha: req.body.fecha,
                     memoria: req.body.memoria,
@@ -355,10 +550,12 @@ module.exports = {
                 }
                 user.resultados.push(resultado)
                 user.save(function (err) {
-                    if(!err){
+                    if (!err) {
                         res.status(200).send()
                     }
                 });
+            } else {
+                res.status(400).send()
             }
 
         })
@@ -421,8 +618,8 @@ module.exports = {
         }
     },
 
-    getEmotions: function f(req,res) {
-        User.findOne({google_id: req.body.google_id},function (err,user) {
+    getEmotions: function f(req, res) {
+        User.findOne({google_id: req.body.google_id}, function (err, user) {
             res.status(200).send(user.gustos)
         })
     }
