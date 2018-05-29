@@ -135,6 +135,7 @@ module.exports = {
     },
 
     nextRound: async function f(req, res) {
+        var op = ["Daniel", "Edwin", "Patricia", "Estefanía"]
         User.findOne({google_id: req.body.google_id}, function (err, user) {
             if (user) {
                 console.log("cono")
@@ -347,7 +348,28 @@ module.exports = {
                                                             }
                                                         })()
                                                         console.log(p10)
+                                                        //p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+                                                        var nombre = user.nombre
+                                                        p10 = {
+                                                            respuestaSec: [],
+                                                            pregunta: "¿Cuál es tu nombre?",
+                                                            respuestaSel: nombre,
+                                                            imagen: false,
+                                                            ifSec: false,
+                                                            rutaImagen: null,
+                                                            area: 1,
+                                                            subArea: 1
+
+                                                        }
+                                                        if (op.includes(nombre)) {
+                                                            p10.opciones = op
+                                                        } else {
+                                                            op.pop()
+                                                            op.push(nombre)
+                                                            p10.opciones = op
+                                                        }
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+
                                                         console.log(p.length)
                                                         ids = []
                                                         res.status(200).send(p)
@@ -519,6 +541,25 @@ module.exports = {
                                                         })()
                                                         console.log(ids)
                                                         ids = []
+                                                        //p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+                                                        var nombre = user.nombre
+                                                        p10 = {
+                                                            respuestaSec: [],
+                                                            pregunta: "¿Cuál es tu nombre?",
+                                                            respuestaSel: nombre,
+                                                            imagen: false,
+                                                            ifSec: false,
+                                                            rutaImagen: null,
+                                                            area: 1,
+                                                            subArea: 1
+                                                        }
+                                                        if (op.includes(nombre)) {
+                                                            p10.opciones = op
+                                                        } else {
+                                                            op.pop()
+                                                            op.push(nombre)
+                                                            p10.opciones = op
+                                                        }
                                                         p = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
                                                         console.log(p)
                                                         res.status(200).send(p)
