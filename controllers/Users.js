@@ -54,11 +54,11 @@ module.exports = {
 
         });
 
-        user.save(function (err) {
+        user.save(function (err,u) {
             if (err)
                 console.log(err);
             else
-                res.send(user)
+                res.send(u)
         })
 
     },
